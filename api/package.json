@@ -1,0 +1,24 @@
+{
+  "name": "home-api",
+  "version": "1.0.0",
+  "description": "Home api",
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "babel-node lib/index.js --presets es2015,stage-2",
+    "build": "babel lib -d dist --presets es2015,stage-2",
+    "serve": "node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.3",
+    "express-jwt": "^5.3.0",
+    "jwks-rsa": "^1.2.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1"
+  }
+}

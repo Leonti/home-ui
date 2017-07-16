@@ -8,6 +8,7 @@ docker build -t leonti/home-ui:$version .
 docker push leonti/home-ui
 git tag -a v$version -m 'new version $version'
 
+
 git push --quiet "https://${TAG_TOKEN}@github.com/Leonti/home-ui" HEAD:master --follow-tags > /dev/null 2>&1
 
 echo "Released version "$version

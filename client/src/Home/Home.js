@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import LastReading from './LastReading'
 
 class Home extends Component {
   login() {
@@ -11,8 +12,9 @@ class Home extends Component {
         {
           isAuthenticated() && (
               <h4>
-                You are logged in!
+                You are logged inn!
               </h4>
+             <LastReading />
             )
         }
         {

@@ -46,6 +46,10 @@ export default class Auth {
     history.replace('/home');
   }
 
+  getAccessToken() {
+      return Promise.resolve(localStorage.getItem('access_token'))
+  }
+
   logout() {
     // Clear access token and ID token from local storage
     localStorage.removeItem('access_token');

@@ -1,7 +1,8 @@
 const express = require('express')
 const app = express()
-const jwt = require('express-jwt');
-const jwks = require('jwks-rsa');
+const path = require('path')
+const jwt = require('express-jwt')
+const jwks = require('jwks-rsa')
 const cors = require('cors')
 const mongodb = require('mongodb')
 
@@ -15,7 +16,8 @@ const mongoDbPromise = new Promise((resolve, reject) => {
     })
 })
 
-app.use(express.static('../client/build'))
+//app.use(express.static('../client/build'))
+
 
 const jwtCheck = jwt({
     secret: jwks.expressJwtSecret({
@@ -43,9 +45,17 @@ const errorHandler = function (err, req, res, next) {
   }
 }
 
-app.use(cors(), jwtCheck, homeUsersCheck, errorHandler)
+const apiMiddleware = [jwtCheck, homeUsersCheck, errorHandler]
 
-app.get('/api/last-reading', (req, res) => {
+app.use((req, res, next) => {
+  if (!req.url.match(/\/api\/*/g)) {
+    res.sendFile(path.resolve(__dirname, '../../client/build/index.html'))
+  } else {
+    next();
+  }
+});
+
+app.get('/api/last-reading', apiMiddleware, (req, res) => {
     mongoDbPromise.then(db => db.collection('readings').findOne({}, {
             sort: [['timestamp', -1]],
             fields: {

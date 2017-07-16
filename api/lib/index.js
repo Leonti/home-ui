@@ -5,6 +5,7 @@ const jwt = require('express-jwt')
 const jwks = require('jwks-rsa')
 const cors = require('cors')
 const mongodb = require('mongodb')
+const fs = require('fs')
 
 const MongoClient = mongodb.MongoClient;
 
@@ -47,9 +48,16 @@ const errorHandler = function (err, req, res, next) {
 
 const apiMiddleware = [jwtCheck, homeUsersCheck, errorHandler]
 
+// /static /static/css/main.1d4c7900.css
 app.use((req, res, next) => {
   if (!req.url.match(/\/api\/*/g)) {
-    res.sendFile(path.resolve(__dirname, '../../client/build/index.html'))
+    const filePath = req.url.replace('/', '../../client/build/')
+    const file = path.resolve(__dirname, filePath)
+
+    fs.access(file, fs.constants.R_OK, err => {
+      err ? res.sendFile(path.resolve(__dirname, '../../client/build/index.html')) 
+        : res.sendFile(file);
+    })
   } else {
     next();
   }

@@ -30,15 +30,16 @@ const jwtCheck = jwt({
 })
 
 const homeUsersCheck = (req, res, next) => {
-    console.log(req.user.sub)
-    console.log(req.headers.authorization)
-    next()
+    if(req.user.sub === 'google-oauth2|106496533429095347725') {
+      next()
+    } else {
+      res.status(401).json({error: 'unknown user'});
+    }
 }
 
-const error = msg => { error: msg}
 const errorHandler = function (err, req, res, next) {
   if (err.name === 'UnauthorizedError') {
-    res.status(401).json(error('Invalid Token'));
+    res.status(401).json({error: 'unauthorized request'});
   }
 }
 

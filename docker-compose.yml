@@ -9,3 +9,5 @@ services:
       - MONGO_DB
       - MONGO_USERNAME
       - MONGO_PASSWORD
+    ports:
+      - "4000:3003"

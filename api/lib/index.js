@@ -50,21 +50,18 @@ const apiMiddleware = [jwtCheck, homeUsersCheck, errorHandler]
 
 // /static /static/css/main.1d4c7900.css
 app.use((req, res, next) => {
-  console.log('not NEXT', req.url)
   if (req.url == '/') {
-    console.log('sending index')
     res.sendFile(path.resolve(__dirname, '../../client/build/index.html'))
   } else if (!req.url.match(/\/api\/*/g)) {
     const filePath = req.url.replace('/', '../../client/build/')
     const file = path.resolve(__dirname, filePath)
 
-    fs.access(file, fs.constants.R_OK, err => {
+    fs.access(file, (fs.constants || fs).R_OK, err => {
       console.log(err)
       err ? res.sendFile(path.resolve(__dirname, '../../client/build/index.html'))
         : res.sendFile(file);
     })
   } else {
-    console.log('NEXT', req.url)
     next()
   }
 });

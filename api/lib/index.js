@@ -57,7 +57,6 @@ app.use((req, res, next) => {
     const file = path.resolve(__dirname, filePath)
 
     fs.access(file, (fs.constants || fs).R_OK, err => {
-      console.log(err)
       err ? res.sendFile(path.resolve(__dirname, '../../client/build/index.html'))
         : res.sendFile(file);
     })

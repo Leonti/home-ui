@@ -3,11 +3,11 @@ FROM mhart/alpine-node:8.1.4
 COPY . /root/app
 
 WORKDIR /root/app/api
-RUN JOBS=MAX npm install --unsafe-perm && npm cache clean --force && rm -rf /tmp/*
+RUN JOBS=MAX yarn install --unsafe-perm && yarn cache clean --force && rm -rf /tmp/*
 
 WORKDIR /root/app/client
-RUN JOBS=MAX npm install --unsafe-perm && npm cache clean --force && rm -rf /tmp/*
-RUN JOBS=MAX npm run build
+RUN JOBS=MAX yarn install --unsafe-perm && yarn cache clean --force && rm -rf /tmp/*
+RUN JOBS=MAX yarn run build
 
 WORKDIR /root/app/api
 

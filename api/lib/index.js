@@ -79,7 +79,7 @@ app.get('/api/last-reading', apiMiddleware, (req, res) => {
 })
 
 const acHeatingCommand = c => {
-    if (c === 'middle') {
+    if (c === 'medium') {
         return 'ON_HEAT_24'
     } else if (c === 'high') {
         return 'ON_HEAT_26'
@@ -89,7 +89,7 @@ const acHeatingCommand = c => {
 }
 
 const sendCommand = command => {
-    mongoDbPromise().then(db => db.collection('commands').insertOne(command).then(
+    return mongoDbPromise().then(db => db.collection('commands').insertOne(command).then(
             r => {
                 db.close()
                 return r
@@ -106,10 +106,9 @@ const commandSuccess = res => (r => res.status(201).json({ status: 'ok' }))
 const commandError = res => (err => res.status(500).json(error('Failed to send the command')))
 
 app.put('/api/heating/:value', apiMiddleware, (req, res) => {
-
     sendCommand({
             type : 'AC',
-            data : acHeatingCommand(req.value)
+            data : acHeatingCommand(req.params.value)
         }).then(commandSuccess(res), commandError(res))
 })
 

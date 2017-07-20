@@ -11,14 +11,11 @@ const MongoClient = mongodb.MongoClient;
 
 var connectionUrl = `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST_PORT}/${process.env.MONGO_DB}?authMechanism=SCRAM-SHA-1&authSource=${process.env.MONGO_DB}`;
 
-const mongoDbPromise = new Promise((resolve, reject) => {
+const mongoDbPromise= () => new Promise((resolve, reject) => {
     MongoClient.connect(connectionUrl, (err, db) => {
         err !== null ? reject(err) : resolve(db)
     })
 })
-
-//app.use(express.static('../client/build'))
-
 
 const jwtCheck = jwt({
     secret: jwks.expressJwtSecret({
@@ -66,16 +63,70 @@ app.use((req, res, next) => {
 });
 
 app.get('/api/last-reading', apiMiddleware, (req, res) => {
-    mongoDbPromise.then(db => db.collection('readings').findOne({}, {
+    mongoDbPromise().then(db => db.collection('readings').findOne({}, {
             sort: [['timestamp', -1]],
             fields: {
                 _id: 0
             }
-        }))
-        .then(
-            reading => res.json(reading),
+        }).then(
+            reading => {
+                res.json(reading)
+                db.close()
+            },
             err => res.status(500).json(error('Failed to get latest reading'))
         )
+    )
+})
+
+const acHeatingCommand = c => {
+    if (c === 'middle') {
+        return 'ON_HEAT_24'
+    } else if (c === 'high') {
+        return 'ON_HEAT_26'
+    }
+
+    return 'UNKNOWN'
+}
+
+const sendCommand = command => {
+    mongoDbPromise().then(db => db.collection('commands').insertOne(command).then(
+            r => {
+                db.close()
+                return r
+            },
+            err => {
+                db.close()
+                return err
+            }
+        )
+    )
+}
+
+const commandSuccess = res => (r => res.status(201).json({ status: 'ok' }))
+const commandError = res => (err => res.status(500).json(error('Failed to send the command')))
+
+app.put('/api/heating/:value', apiMiddleware, (req, res) => {
+
+    sendCommand({
+            type : 'AC',
+            data : acHeatingCommand(req.value)
+        }).then(commandSuccess(res), commandError(res))
+})
+
+app.put('/api/cooling/on', apiMiddleware, (req, res) => {
+
+    sendCommand({
+            type : 'AC',
+            data : 'ON_COOL'
+        }).then(commandSuccess(res), commandError(res))
+})
+
+app.put('/api/ac/off', apiMiddleware, (req, res) => {
+
+    sendCommand({
+            type : 'AC',
+            data : 'OFF'
+        }).then(commandSuccess(res), commandError(res))
 })
 
 app.listen(3003, function () {

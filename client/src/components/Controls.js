@@ -14,7 +14,7 @@ const Controls = ({onHeatingHigh, onHeatingMedium, onCooling, onOff}) =>
         onClick={onCooling}
         style={{ cursor: 'pointer' }}
         >Cooling</button><br />
-      <button className="btn-margin btn btn-primary"
+      <button className="btn-margin btn btn-primary btn-danger"
         onClick={onOff}
         style={{ cursor: 'pointer' }}
         >Off</button><br />

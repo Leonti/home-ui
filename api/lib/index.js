@@ -11,7 +11,7 @@ const MongoClient = mongodb.MongoClient;
 
 var connectionUrl = `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST_PORT}/${process.env.MONGO_DB}?authMechanism=SCRAM-SHA-1&authSource=${process.env.MONGO_DB}`;
 
-const mongoDbPromise= () => new Promise((resolve, reject) => {
+const mongoDbPromise = new Promise((resolve, reject) => {
     MongoClient.connect(connectionUrl, (err, db) => {
         err !== null ? reject(err) : resolve(db)
     })
@@ -63,16 +63,13 @@ app.use((req, res, next) => {
 });
 
 app.get('/api/last-reading', apiMiddleware, (req, res) => {
-    mongoDbPromise().then(db => db.collection('readings').findOne({}, {
+    mongoDbPromise.then(db => db.collection('readings').findOne({}, {
             sort: [['timestamp', -1]],
             fields: {
                 _id: 0
             }
         }).then(
-            reading => {
-                res.json(reading)
-                db.close()
-            },
+            reading => res.json(reading),
             err => res.status(500).json(error('Failed to get latest reading'))
         )
     )
@@ -89,17 +86,7 @@ const acHeatingCommand = c => {
 }
 
 const sendCommand = command => {
-    return mongoDbPromise().then(db => db.collection('commands').insertOne(command).then(
-            r => {
-                db.close()
-                return r
-            },
-            err => {
-                db.close()
-                return err
-            }
-        )
-    )
+    return mongoDbPromise.then(db => db.collection('commands').insertOne(command))
 }
 
 const commandSuccess = res => (r => res.status(201).json({ status: 'ok' }))

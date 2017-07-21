@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import LastReading from './LastReading';
-
+import Controls from './Controls';
+import { heatingMedium, heatingHigh, coolingOn, acOff } from '../services/Ac';
 
 class Home extends Component {
 
@@ -44,6 +45,20 @@ class Home extends Component {
     return (
     <div>
     {lastReadingView}
+    <Controls
+        onHeatingHigh={() => this.props.auth.getAccessToken()
+              .then(accessToken => heatingHigh(accessToken)())
+          }
+        onHeatingMedium={() => this.props.auth.getAccessToken()
+              .then(accessToken => heatingMedium(accessToken)())
+          }
+        onCooling={() => this.props.auth.getAccessToken()
+              .then(accessToken => coolingOn(accessToken)())
+          }
+        onOff={() => this.props.auth.getAccessToken()
+              .then(accessToken => acOff(accessToken)())
+          }
+    />
     </div>
     )
   }

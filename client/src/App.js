@@ -13,7 +13,8 @@ class App extends Component {
     super(props)
 
     this.state = {
-      lastReading: null
+      lastReading: null,
+      isProcessingCommand: false,
     };
   }
 
@@ -49,6 +50,15 @@ class App extends Component {
       })
   }
 
+  onCommand(func) {
+    return () => this.props.auth.getAccessToken()
+            .then(accessToken => {
+              this.setState({isProcessingCommand: true})
+              return func(accessToken)()
+            })
+            .then(() => this.setState({isProcessingCommand: false}))
+  }
+
   authenticatedView() {
     const lastReadingView = this.state.lastReading !== null ?
       <LastReading
@@ -62,24 +72,19 @@ class App extends Component {
     <div>
     {lastReadingView}
     <Controls
-        onHeatingHigh={() => this.props.auth.getAccessToken()
-              .then(accessToken => heatingHigh(accessToken)())
-          }
-        onHeatingMedium={() => this.props.auth.getAccessToken()
-              .then(accessToken => heatingMedium(accessToken)())
-          }
-        onCooling={() => this.props.auth.getAccessToken()
-              .then(accessToken => coolingOn(accessToken)())
-          }
-        onAcOff={() => this.props.auth.getAccessToken()
-              .then(accessToken => acOff(accessToken)())
-          }
+        onHeatingHigh={this.onCommand(heatingHigh)}
+        onHeatingMedium={this.onCommand(heatingMedium)}
+        onCooling={this.onCommand(coolingOn)}
+        onAcOff={this.onCommand(acOff)}
         onLedOn={(r, g, b) => this.props.auth.getAccessToken()
-              .then(accessToken => ledOn(accessToken)(r, g, b))
+              .then(accessToken => {
+                this.setState({isProcessingCommand: true})
+                return ledOn(accessToken)(r, g, b)
+              })
+              .then(() => this.setState({isProcessingCommand: false}))
           }
-        onLedOff={() => this.props.auth.getAccessToken()
-              .then(accessToken => ledOff(accessToken)())
-          }
+        onLedOff={this.onCommand(ledOff)}
+        isProcessing={this.state.isProcessingCommand}
     />
     </div>
     )

@@ -1,10 +1,4 @@
-
-const callApi = (url, accessToken) => fetch(url, {
-  method: 'PUT',
-  headers: new Headers({
-    'Authorization': `Bearer ${accessToken}`
-  })
-})
+import { callApi } from './Api'
 
 const heatingMedium = accessToken => () => callApi('/api/heating/medium', accessToken)
 

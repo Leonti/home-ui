@@ -3,6 +3,7 @@ import { Navbar } from 'react-bootstrap';
 import LastReading from './components/LastReading';
 import Controls from './components/Controls';
 import { heatingMedium, heatingHigh, coolingOn, acOff } from './services/Ac';
+import { ledOn, ledOff } from './services/Led'
 
 import './App.css';
 
@@ -70,8 +71,14 @@ class App extends Component {
         onCooling={() => this.props.auth.getAccessToken()
               .then(accessToken => coolingOn(accessToken)())
           }
-        onOff={() => this.props.auth.getAccessToken()
+        onAcOff={() => this.props.auth.getAccessToken()
               .then(accessToken => acOff(accessToken)())
+          }
+        onLedOn={(r, g, b) => this.props.auth.getAccessToken()
+              .then(accessToken => ledOn(accessToken)(r, g, b))
+          }
+        onLedOff={() => this.props.auth.getAccessToken()
+              .then(accessToken => ledOff(accessToken)())
           }
     />
     </div>

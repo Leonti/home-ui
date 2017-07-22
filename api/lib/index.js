@@ -86,6 +86,7 @@ const acHeatingCommand = c => {
 }
 
 const sendCommand = command => {
+    console.log(command)
     return mongoDbPromise.then(db => db.collection('commands').insertOne(command))
 }
 
@@ -113,6 +114,24 @@ app.put('/api/ac/off', apiMiddleware, (req, res) => {
             type : 'AC',
             data : 'OFF'
         }).then(commandSuccess(res), commandError(res))
+})
+
+const ledCommand = (r, g, b) => ({
+  type : 'LED',
+  data : {
+    r: r,
+    g: g,
+    b: b
+  }
+})
+
+app.put('/api/led/r/:r/g/:g/b/:b', apiMiddleware, (req, res) => {
+    sendCommand(ledCommand(req.params.r, req.params.g, req.params.b))
+      .then(commandSuccess(res), commandError(res))
+})
+
+app.put('/api/led/off', apiMiddleware, (req, res) => {
+    sendCommand(ledCommand(0, 0, 0)).then(commandSuccess(res), commandError(res))
 })
 
 app.listen(3003, function () {

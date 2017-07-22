@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Controls = ({onHeatingHigh, onHeatingMedium, onCooling, onOff}) =>
+const Controls = ({onHeatingHigh, onHeatingMedium, onCooling, onAcOff, onLedOn, onLedOff}) =>
     <div>
       <button className="btn-margin btn btn-primary"
         onClick={onHeatingHigh}
@@ -15,9 +15,18 @@ const Controls = ({onHeatingHigh, onHeatingMedium, onCooling, onOff}) =>
         style={{ cursor: 'pointer' }}
         >Cooling</button><br />
       <button className="btn-margin btn btn-primary btn-danger"
-        onClick={onOff}
+        onClick={onAcOff}
         style={{ cursor: 'pointer' }}
-        >Off</button><br />
+        >Off</button><br /><br />
+
+      <button className="btn-margin btn btn-primary"
+        onClick={() => onLedOn(255, 255, 255)}
+        style={{ cursor: 'pointer' }}
+        >LED On</button><br />
+      <button className="btn-margin btn btn-primary btn-danger"
+        onClick={onLedOff}
+        style={{ cursor: 'pointer' }}
+        >LED Off</button><br />              
     </div>
 
 export default Controls;

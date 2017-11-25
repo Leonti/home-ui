@@ -32,7 +32,8 @@ const jwtCheck = jwt({
 const homeUsersCheck = (req, res, next) => {
     if(req.user.sub === 'google-oauth2|106496533429095347725'
       || req.user.sub === 'google-oauth2|100181074827094964607'
-      || req.user.sub == 'google-oauth2|108748095257783010978') {
+      || req.user.sub == 'google-oauth2|108748095257783010978'
+      || req.user.sub == 'cIdlnvJKuHuEnaVK6sE4kT1pqrJ9cvYp@clients') {
       next()
     } else {
       res.status(401).json({error: 'unknown user'});
